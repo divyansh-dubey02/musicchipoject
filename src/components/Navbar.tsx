@@ -30,7 +30,7 @@ function Navbar({ className }: { className?: string }) {
        </Link>
 
        <Link href={"/profile"}>
-       <MenuItem setActive={setActive} active={active} item="logout">
+       <MenuItem setActive={setActive} active={active} item="User Profile">
       </MenuItem>
        </Link>
 
