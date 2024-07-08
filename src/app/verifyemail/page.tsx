@@ -1,24 +1,13 @@
-'use client'
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
+// use client
+'use client';
+import axios, { AxiosError } from 'axios'; // Import AxiosError for type inference
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function VerifyEmailPage() {
-  const [token, setToken] = useState("")
-  const [verified, setVerified] = useState(false)
-  const [error, setError] = useState(false)
-
-  const verifyUseremail = async () => {
-    try {
-      await axios.post("/api/users/verifyemail", { token });
-      setVerified(true);
-      setError(false);
-    } catch (error) {
-      setError(true);
-      console.log(error.response?.data);
-    }
-  }
+  const [token, setToken] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     setError(false);
@@ -27,11 +16,22 @@ export default function VerifyEmailPage() {
   }, []);
 
   useEffect(() => {
+    const verifyUseremail = async () => {
+      try {
+        await axios.post("/api/users/verifyemail", { token });
+        setVerified(true);
+        setError(false);
+      } catch (error: any) {
+        setError(true);
+        console.log((error as AxiosError)?.response?.data); // Access response data safely
+      }
+    }
+
     setError(false);
     if (token.length > 0) {
       verifyUseremail();
     }
-  }, [token, verifyUseremail]);
+  }, [token]);
 
   return (
     <div className='min-h-screen flex items-center justify-center'>
@@ -50,8 +50,7 @@ export default function VerifyEmailPage() {
             <h2>Error</h2>
           </div>
         )}
-
       </div>
     </div>
-  )
+  );
 }

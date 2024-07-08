@@ -1,53 +1,49 @@
-// Import necessary modules and functions
-import { connect } from "@/dbconfig/dbConfig"  // Import the connect function to connect to the database
-import User from "@/models/user.model"         // Import the User model for database operations
-import { NextRequest, NextResponse } from 'next/server'  // Import Next.js request and response types
-import bcryptjs from "bcryptjs"                // Import bcryptjs for password hashing
-import jwt from "jsonwebtoken"
-connect()
+import jwt from "jsonwebtoken";
+import bcryptjs from "bcryptjs"; // Ensure bcryptjs is properly imported
+import User from "@/models/user.model";
+import { NextRequest, NextResponse } from 'next/server';
+import { connect } from "@/dbconfig/dbConfig";
 
-export async function POST(request:NextRequest){
+connect(); // Ensure database connection is established
+
+export async function POST(request: NextRequest) {
   try {
-    
-    const reqBody = await request.json()
-    const {email,password}= reqBody
-    console.log(reqBody)
+    const reqBody = await request.json();
+    const { email, password } = reqBody;
+    console.log(reqBody);
 
-    //vaidation
-    
-    const user = await User.findOne({email})
+    // Validation
+    const user = await User.findOne({ email });
 
-    
-    if(!user){
-      return NextResponse.json({error:"user does not exists "},{status:400})
+    if (!user) {
+      return NextResponse.json({ error: "User does not exist" }, { status: 400 });
     }
 
-      console.log("user exists");
+    console.log("User exists");
 
+    const validPassword = await bcryptjs.compare(password, user.password);
 
-  const validPassword =  await bcryptjs.compare(password,user.password)
-
-  if(!validPassword){
-    return NextResponse.json({error:"check your cridentials"},{status:400})
-  }
-
-    const tokenData ={
-      id:user._id,
-      username:user.username,
-      email:user.email,
+    if (!validPassword) {
+      return NextResponse.json({ error: "Check your credentials" }, { status: 400 });
     }
 
-   const token= await jwt.sign(tokenData,process.env.TOKEN_SECRET!,{expiresIn:'1d'})
+    const tokenData = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
 
-   const response = NextResponse.json({message:"logged in successfully",success:true})
+    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, { expiresIn: '1d' });
 
-   response.cookies.set("token",token,{
-    httpOnly:true
-   })
+    const response = NextResponse.json({ message: "Logged in successfully", success: true });
 
-   return response;
+    response.cookies.set("token", token, {
+      httpOnly: true
+    });
 
-  } catch (error:any) {
-    return NextResponse.json({error:error.message},{status:500})
+    return response;
+  } catch (error: any) {
+    console.error("Error in login API:", error); // Log the error for debugging purposes
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 }); // Generic error message for internal server errors
   }
 }

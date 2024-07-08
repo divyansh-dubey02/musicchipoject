@@ -1,12 +1,14 @@
-'use client'
-import React from "react";
+'use client'; // Ensure client-side rendering context
 
-import courseData from "@/data/music_courses.json";
-import Link from "next/link";
-import {BackgroundGradient} from "@/components/ui/background-gradient"
+import React from 'react';
+
+
+import { BackgroundGradient } from '@/components/ui/background-gradient';
+import courseData from '@/data/music_courses.json';
+import Link from 'next/link';
 
 interface Course {
-  id: string;
+  id: number;
   title: string;
   slug: string;
   description: string;
@@ -14,7 +16,6 @@ interface Course {
   instructor: string;
   isFeatured: boolean;
 }
-
 
 function FeaturedCourses() {
   const featuredCourses = courseData.courses.filter((course: Course) => course.isFeatured);
@@ -31,12 +32,12 @@ function FeaturedCourses() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
           {featuredCourses.map((course: Course) => (
             <div key={course.id} className="flex justify-center">
-              <BackgroundGradient className="flex flex-col rounded-[22px] bg-white dark: bg-zinc-900 h-full max-w-sm overflow-hidden">
-             <div className="p-4 sm:p-6 flex flex-col items-center text-center flex-grow"> 
-             <p className="text-lg sm:text-xl text-black mt-4 mb-2 dark: text-neutral-200">{course.title}</p>
-             <p className="text-sm text-neutral-600 dark:text-neutral-400 flex-grow">{course.description}</p>
-             <Link href={`/courses/${course.slug}`} className="mt-4 float-end"> Learn More</Link>
-             </div>
+              <BackgroundGradient className="flex flex-col rounded-[22px] bg-white dark:bg-zinc-900 h-full max-w-sm overflow-hidden">
+                <div className="p-4 sm:p-6 flex flex-col items-center text-center flex-grow">
+                  <p className="text-lg sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">{course.title}</p>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 flex-grow">{course.description}</p>
+                  <Link href={`/courses/${course.slug}`} className="mt-4 float-end"> Learn More</Link>
+                </div>
               </BackgroundGradient>
             </div>
           ))}
